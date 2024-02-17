@@ -1,12 +1,11 @@
 import datasets
 
-
-
 lang='en'  # or any of the 16 languages
 miracl = datasets.load_dataset('miracl/miracl', lang, use_auth_token=True, streaming=True)
 
 # training set:
-for data in miracl['train']:  # or 'dev', 'testA'
+for data in miracl['dev']:  # or 'dev', 'testA'
+  print(data['query'])
   query_id = data['query_id']
   query = data['query']
   positive_passages = data['positive_passages']
@@ -18,6 +17,4 @@ for data in miracl['train']:  # or 'dev', 'testA'
     text = entry['text']
     break
   break
-
-
 

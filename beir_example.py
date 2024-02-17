@@ -1,12 +1,16 @@
 from time import time
-from beir import util, LoggingHandler
-from beir.retrieval import models
+from beir import util
+from beir_reengineered import NewSentenceBERT
 from beir.datasets.data_loader import GenericDataLoader
 from beir.retrieval.evaluation import EvaluateRetrieval
 from beir.retrieval.search.dense import DenseRetrievalExactSearch as DRES
 import os, json, random
 
-dataset = "trec-covid"
+dataset = "quora"
+sbert_model_name = "msmarco-distilbert-base-tas-b"
+device = "cuda:2" # cuda for gpu usage
+k_queries = 15
+k_documents = 10000
 
 #### Download nfcorpus.zip dataset and unzip the dataset
 url = "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/{}.zip".format(dataset)
@@ -26,31 +30,80 @@ corpus, queries, qrels = GenericDataLoader(data_folder=data_path).load(split="te
 #### The model was fine-tuned using cosine-similarity.
 #### Complete list - https://www.sbert.net/docs/pretrained_models.html
 
-model = DRES(models.SentenceBERT("msmarco-distilbert-base-tas-b"), batch_size=256, corpus_chunk_size=512*9999)
-retriever = EvaluateRetrieval(model, score_function="dot")
+beir_sbert = NewSentenceBERT(sbert_model_name, device=device)
+model = DRES(beir_sbert, batch_size=256, corpus_chunk_size=512*9999)
 
-#### Retrieve dense results (format of results is identical to qrels)
-start_time = time()
-results = retriever.retrieve(corpus, queries)
-end_time = time()
-print("Time taken to retrieve: {:.2f} seconds".format(end_time - start_time))
-#### Evaluate your retrieval using NDCG@k, MAP@K ...
+# Embed documents and queries, save them for PSI
+subset_of_queries = random.sample(queries.keys(), k_queries)
+queries = {qid: queries[qid] for qid in subset_of_queries}
+qrels = {qid: qrels[qid] for qid in subset_of_queries}
+true_documents = set([docid for qid in qrels for docid in qrels[qid]])
+false_documents = set(random.sample(list(set([docid for docid in corpus if docid not in true_documents])), k_documents))
+subset_of_corpus = true_documents | false_documents
+corpus = {docid: corpus[docid] for docid in subset_of_corpus}
 
-print("Retriever evaluation for k in: {}".format(retriever.k_values))
-ndcg, _map, recall, precision = retriever.evaluate(qrels, results, retriever.k_values)
+queries_l = [queries[qid] for qid in queries]
+query_embeddings = model.model.encode_queries(
+            queries_l, batch_size=model.batch_size, show_progress_bar=model.show_progress_bar, convert_to_tensor=model.convert_to_tensor).cpu().numpy()
 
-mrr = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="mrr")
-recall_cap = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="r_cap")
-hole = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="hole")
+corpus_ids = sorted(corpus, key=lambda k: len(corpus[k].get("title", "") + corpus[k].get("text", "")), reverse=True)
+corpus_l = [corpus[cid] for cid in corpus_ids]
+sub_corpus_embeddings = model.model.encode_corpus(
+        corpus_l,
+        batch_size=model.batch_size,
+        show_progress_bar=model.show_progress_bar, 
+        convert_to_tensor = model.convert_to_tensor
+        ).cpu().numpy()
 
-#### Print top-k documents retrieved ####
-top_k = 10
+# Save as new dataset
+os.makedirs("datasets/subquora/qrels", exist_ok=True)
+with open("datasets/subquora/queries.jsonl", "w") as f:
+    f.writelines([json.dumps({"_id": qid, "text": queries[qid], "metadata":{}})+"\n" for qid in queries])
+with open("datasets/subquora/corpus.jsonl", "w") as f:
+    f.writelines([json.dumps({"_id": docid, "title": corpus[docid].get("title"), "text": corpus[docid].get("text"), "metadata":{}})+"\n" for docid in corpus])
+with open("datasets/subquora/qrels/test.tsv", "w") as f:
+    f.write("query-id\tcorpus-id\tscore\n")
+    for qid in qrels:
+        for docid in qrels[qid]:
+            f.write("{}\t{}\t{}\n".format(qid, docid, qrels[qid][docid]))
 
-query_id, ranking_scores = random.choice(list(results.items()))
-scores_sorted = sorted(ranking_scores.items(), key=lambda item: item[1], reverse=True)
-print("Query : %s\n" % queries[query_id])
+# Save embeddings
+corpus_embeddings_dict = dict(zip(corpus_ids, sub_corpus_embeddings))
+query_embeddings_dict = dict(zip(queries.keys(), query_embeddings))
+import pickle
+with open("datasets/subquora/corpus_embeddings.pkl", "wb") as f:
+    pickle.dump(corpus_embeddings_dict, f)
+with open("datasets/subquora/query_embeddings.pkl", "wb") as f:
+    pickle.dump(query_embeddings_dict, f)
 
-for rank in range(top_k):
-    doc_id = scores_sorted[rank][0]
-    # Format: Rank x: ID [Title] Body
-    logging.info("Rank %d: %s [%s] - %s\n" % (rank+1, doc_id, corpus[doc_id].get("title"), corpus[doc_id].get("text")))
+
+
+
+
+# retriever = EvaluateRetrieval(model, score_function="dot")
+
+# #### Retrieve dense results (format of results is identical to qrels)
+# start_time = time()
+# results = retriever.retrieve(corpus, queries)
+# end_time = time()
+# print("Time taken to retrieve: {:.2f} seconds".format(end_time - start_time))
+# #### Evaluate your retrieval using NDCG@k, MAP@K ...
+
+# print("Retriever evaluation for k in: {}".format(retriever.k_values))
+# ndcg, _map, recall, precision = retriever.evaluate(qrels, results, retriever.k_values)
+
+# mrr = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="mrr")
+# recall_cap = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="r_cap")
+# hole = retriever.evaluate_custom(qrels, results, retriever.k_values, metric="hole")
+
+# #### Print top-k documents retrieved ####
+# top_k = 10
+
+# query_id, ranking_scores = random.choice(list(results.items()))
+# scores_sorted = sorted(ranking_scores.items(), key=lambda item: item[1], reverse=True)
+# print("Query : %s\n" % queries[query_id])
+
+# for rank in range(top_k):
+#     doc_id = scores_sorted[rank][0]
+#     # Format: Rank x: ID [Title] Body
+#     logging.info("Rank %d: %s [%s] - %s\n" % (rank+1, doc_id, corpus[doc_id].get("title"), corpus[doc_id].get("text")))
