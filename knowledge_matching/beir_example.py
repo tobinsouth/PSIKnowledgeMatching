@@ -1,6 +1,13 @@
 """This file is going to use BEIR to download a dataset and create embeddings of it. In can then evaluate the performance of those embeddings.
  By default, it will use a subset of a standard dataset for speed reasons, but full benchmarks are run for the paper."""
 
+
+DATASET = "quora"
+sbert_model_name = "msmarco-distilbert-base-tas-b"
+device = "cuda:2" # cuda for gpu usage
+k_queries = 15
+k_documents = 10000
+
 from time import time
 from beir import util
 from beir_reengineered import NewSentenceBERT
@@ -9,14 +16,9 @@ from beir.retrieval.evaluation import EvaluateRetrieval
 from beir.retrieval.search.dense import DenseRetrievalExactSearch as DRES
 import os, json, random
 
-dataset = "quora"
-sbert_model_name = "msmarco-distilbert-base-tas-b"
-device = "cuda:2" # cuda for gpu usage
-k_queries = 15
-k_documents = 10000
 
 #### Download nfcorpus.zip dataset and unzip the dataset
-url = "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/{}.zip".format(dataset)
+url = "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/{}.zip".format(DATASET)
 out_dir = "datasets"
 data_path = util.download_and_unzip(url, out_dir)
 
