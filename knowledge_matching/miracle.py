@@ -1,3 +1,5 @@
+# Miracle is an alternative dataset for knowledge matching. Stick to BEIR for now.
+
 import datasets
 
 lang='en'  # or any of the 16 languages

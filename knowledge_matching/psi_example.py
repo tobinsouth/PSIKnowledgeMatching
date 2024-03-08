@@ -1,3 +1,6 @@
+
+# This is the file we're we can show how to use PSI to compare the embeddings of the documents and queries.
+
 import private_set_intersection.python as psi # !pip install openmined.psi
 import os, json, random, pickle
 from beir.datasets.data_loader import GenericDataLoader
@@ -14,11 +17,9 @@ with open("datasets/subquora/query_embeddings.pkl", "rb") as f:
 X = np.stack(list(corpus_embeddings_dict.values())+list(query_embeddings_dict.values()))
 
 
-
 doc_embedding = query_embeddings_dict['443118']
 
 np.floor(doc_embedding.round(0))
-
 
 
 # plot pca of x

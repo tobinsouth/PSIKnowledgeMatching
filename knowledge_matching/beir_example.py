@@ -1,3 +1,6 @@
+"""This file is going to use BEIR to download a dataset and create embeddings of it. In can then evaluate the performance of those embeddings.
+ By default, it will use a subset of a standard dataset for speed reasons, but full benchmarks are run for the paper."""
+
 from time import time
 from beir import util
 from beir_reengineered import NewSentenceBERT
