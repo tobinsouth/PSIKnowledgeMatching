@@ -24,11 +24,15 @@ We extend this idea to two LLMs trying to match on answers to questions,
 - We repeat using smaller bins until we have the answers we need. 
 - The LLM can then send the raw text answers to the asker knowing that they have utility for one another. 
 
+## Repo Explainer
+Part 1 of the project will be contained in `knowledge_matching` and part 2 will be contained in `agents_talking`. Read their sub-READMEs for more information.
 
-## Requirements
+
+### Requirements
 We're going to need:
 * [OpenMined's PSI](https://github.com/OpenMined/PSI) (install via [PyPi](https://pypi.org/project/openmined.psi/)) for PSI.
 * [SBERT](https://www.sbert.net/) for embeddings.
 * [Vec2Text](https://github.com/jxmorris12/vec2text).
 * [OpenAI's Ada Embeddings](https://platform.openai.com/docs/guides/embeddings) for easy embeddings.
 * [OpenAI's GPT-3](https://platform.openai.com/docs/api-reference) for LLMs talking.
+
