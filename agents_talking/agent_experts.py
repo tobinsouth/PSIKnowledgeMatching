@@ -5,10 +5,7 @@ from torch import embedding_bag
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-client = OpenAI(
-    #Get the openAI API Secret Key
-    api_key = os.environ.get("OPENAI_API_KEY")
-)
+client = OpenAI()
 
 #array for the sentences we would like to encode
 expert_questions = []
