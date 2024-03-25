@@ -65,7 +65,7 @@ for x in range(0,1):
 #     talking_points_conversation_history.append({"role": "user", "content": content})
 #     talking_points_conversation_history.append({"role": "assistant", "content": chat_response})
 #     x+=1
-# #print(expert_talking_points)
+#print(expert_talking_points)
 
 
 def get_embeddings_openai(text_list, model="text-embedding-ada-002") -> torch.Tensor:
