@@ -1,0 +1,25 @@
+***TEST TO SEE THE ACCURACY AFTER INVERTING THE EMBEDDING ON A BUNCH OF QUESTIONS***
+
+Original questions:
+['What evidence do we have to suggest that feathered dinosaurs may have exhibited complex mating behaviors similar to modern birds?',
+'What biomechanical adaptations did the long necks of sauropod dinosaurs have to support their massive size and reach high vegetation levels?',
+'What environmental factors led to the extinction of the non-avian dinosaurs at the end of the Cretaceous period?',
+'What evidence of social behavior and group dynamics do we see in the fossil record of dinosaur trackways?',
+'What evolutionary mechanisms might have driven the diversification of theropod dinosaurs into various ecological niches during the Mesozoic era?',
+'What transitional features in the fossil record provide insights into the evolution of flight in early feathered dinosaurs?',
+'What anatomical adaptations in the jaw structures of ceratopsian dinosaurs influenced their feeding behaviors and diet preferences?',
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for insights into ancient environments and dietary habits of extinct species?',
+'What evidence from the fossil record supports the hypothesis that dinosaurs may have possessed some form of parental care similar to modern avian species?',
+'What insights can the study of dinosaur coprolites provide about the diets and digestive systems of ancient species, and how can this information help us understand their ecological roles?']
+
+inveted embeddings:
+['What evidence do we have to suggest that feathered dinosaurs may have exhibited  complex mating behaviors similar to modern birds? ',
+'What biomechanical adaptations did the long necks of sauropod dinosaurs have to support their massive size and reach high vegetation levels? ',
+'What environmental factors led to the extinction of the non-avian dinosaurs at the end of the Cretaceous period?  ',
+'What evidence of social behavior and group dynamics do we see in the fossil record of dinosaur    trackways? ',
+'What evolutionary mechanisms might have driven the diversification of theropod dinosaurs into various ecological niches during the Mesozoic era?',
+'What transitional features in the fossil record provide insights into the evolution of flight in early feathered dinosaurs?    ',
+'What anatomical adaptations in the jaw structures of ceratopsian dinosaurs influenced their feeding behaviors and diet preferences?  ', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?',
+'What evidence from the fossil record supports the hypothesis that dinosaurs may have possessed some form of parental care similar to modern avian species? ',
+'What insights can the study of dinosaur coprolites provide us with information about the diets of ancient species and their digestive systems, and their ecological roles?']
