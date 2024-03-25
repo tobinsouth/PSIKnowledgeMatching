@@ -6,10 +6,6 @@ import numpy as np
 import os
 import time
 
-client = OpenAI(
-    api_key = os.environ.get("OPENAI_API_KEY")
-)
-
 #array for the sentences we would like to encode
 expert_questions = []
 expert_talking_points = []
