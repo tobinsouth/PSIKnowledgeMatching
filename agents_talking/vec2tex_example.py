@@ -3,9 +3,8 @@ import torch
 from openai import OpenAI
 from transformers import AutoModel, AutoTokenizer, PreTrainedTokenizer, PreTrainedModel
 import numpy as np
-
-
 import os
+
 
 
 def get_embeddings_openai(text_list, model="text-embedding-ada-002") -> torch.Tensor:
