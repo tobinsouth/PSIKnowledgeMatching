@@ -1,0 +1,48 @@
+Initial question:
+['What evidence do we have to suggest that feathered dinosaurs may have exhibited complex mating behaviors similar to modern birds?']
+
+Question after inverting embedding with noise (488.9  seconds to invert embedding)
+['What evidence do we have to suggest that feathered dinosaurs may have exhibited  complex mating behaviors similar to modern birds? ', 
+'What evidence do we have to suggest that feathered dinosaurs may have exhibited  complex mating behaviors similar to modern birds? ', 
+'What evidence do we have to suggest that feathered dinosaurs may have exhibited  complex mating behaviors similar to modern birds? ', 
+'What evidence do we have to suggest that feathered dinosaurs may have exhibited  complex mating behaviors similar to modern birds? ', 
+'What evidence do we have to suggest that feathered dinosaurs may have exhibited  complex mating behaviors similar to modern birds? ', 
+'What evidence do we have to suggest that feathered dinosaurs may have exhibited  complex mating behaviors similar to modern birds? ', 
+'What evidence do we have to suggest that feathered dinosaurs may have exhibited complex mating behaviors similar to modern birds?   ', 
+'What evidence do we have to suggest that feathered dinosaurs may have exhibited complex mating behaviors similar to modern birds?   ', 
+'Which evidence is enough to support the suggestion that feathered dinosaurs may have exhibited complex mating behaviors similar to modern Dinosaurian birds?', 
+"been suggested to be dinosaur behaviour such as 'Dirty', 'Complexing', 'Fraying',"]
+
+
+Inbitial question:
+['What biomechanical adaptations did the long necks of sauropod dinosaurs have to support their massive size and reach high vegetation levels?']
+
+Question after inverting embedding with noise (394.7  seconds to invert embedding)
+['What biomechanical adaptations did the long necks of sauropod dinosaurs have to support their massive size and reach high vegetation levels? ', 
+'What biomechanical adaptations did the long necks of sauropod dinosaurs have to support their massive size and reach high vegetation levels? ', 
+'What biomechanical adaptations did the long necks of sauropod dinosaurs have to support their massive size and reach high vegetation levels? ', 
+'What biomechanical adaptations did the long necks of sauropod dinosaurs have to support their massive size and reach high vegetation levels? ', 
+'What biomechanical adaptations did the long necks of sauropod dinosaurs have to support their massive size and reach high vegetation levels? ', 
+'What biomechanical adaptations did the long necks of sauropod dinosaurs have to support their massive size and reach high vegetation levels? ', 
+'What biomechanical adaptations did the long necks of sauropod dinosaurs have to support their massive size and reach high vegetation levels? ', 
+'What biomechanical adaptations did the long necks of sauropod dinosaurs have to support their massive size and reach high vegetation levels?', 
+'Biomechanical adaptations of large sauropod dinosaurs which their long neck-to-neck necks did support the high levels of vegetation (http', 
+'when \'their \'long necks\' gave them a means of adaptation.\'" - University of California, Irvine. Professor Susan']
+
+
+Initial question:
+['What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for insights into ancient environments and dietary habits of extinct species?']
+
+Question after inverting embedding with noise  (rounded ) (386.3  seconds to invert embedding)
+['What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for insights into ancient dietary habits and extinct environments?', 
+'multi-disciplinary techniques which paleontologists use to analyze the chemical composition of fossilised bones for insights into what they do in the ancient dietary habits?', 
+"and which are alleged to consist of 'Classics of Chemical Mathematics', in which a pious disciplinary counsel, Solomon Po"]
+
+Question after inverting embedding with noise (random) (451.0  seconds to invert embedding)
