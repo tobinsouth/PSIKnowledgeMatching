@@ -46,3 +46,13 @@ Question after inverting embedding with noise  (rounded ) (386.3  seconds to inv
 "and which are alleged to consist of 'Classics of Chemical Mathematics', in which a pious disciplinary counsel, Solomon Po"]
 
 Question after inverting embedding with noise (random) (451.0  seconds to invert embedding)
+['What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for dietary habits and insights into ancient extinct environments?', 
+'What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for insights into dietary habits of ancient extinct environments?', 
+'Where is currently unclear what multidisciplinary techniques do paleontologists utilize to analyze the chemical and physical composition of fossil bones for ailments formerly inhabited by ', 
+'is unclear where grouchhounds currently exist in the universe. Many physical and emotional psychologists develop and dig isolated isolated dead bodies from digestive illness for']

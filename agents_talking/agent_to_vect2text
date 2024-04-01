@@ -6,9 +6,6 @@ import numpy as np
 import os
 import time
 
-client = OpenAI(
-    api_key = os.environ.get("OPENAI_API_KEY")
-)
 
 #array for the sentences we would like to encode
 expert_questions = []
@@ -28,7 +25,7 @@ for x in range(0,1):
         {"role": "user", "content": content}
     ]
 
-    chat_completion = client.chat.completions.create(
+    chat_completion = OpenAI.chat.completions.create(
         messages = messages,
         model = "gpt-3.5-turbo",
     )
