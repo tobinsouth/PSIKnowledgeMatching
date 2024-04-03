@@ -12,23 +12,27 @@ import matplotlib.pyplot as plt
 torch.set_printoptions(precision=10)
 
 #Testing how adding noise ruins the sentence
-encoder = AutoModel.from_pretrained("sentence-transformers/gtr-t5-base").encoder.to("cuda")
+encoder = AutoModel.from_pretrained("sentence-transformers/gtr-t5-base")
 tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/gtr-t5-base")
 corrector = vec2text.load_pretrained_corrector("gtr-base")
+
+encoder = encoder.to("cpu")
+
+encoder(decoder_input_ids = torch.tensor([[1,2,3]]))
 
 #Cheeky embedding and inverting function using gtr embedding for now
 def embedd_text(text_list,
                        encoder: PreTrainedModel,
-                       tokenizer: PreTrainedTokenizer) -> torch.Tensor:
+                       tokenizer: PreTrainedTokenizer, device='cpu') -> torch.Tensor:
 
         inputs = tokenizer(text_list,
                        return_tensors="pt",
                        max_length=128,
                        truncation=True,
-                       padding="max_length",).to("cuda")
+                       padding="max_length",).to(device)
 
         with torch.no_grad():
-            model_output = encoder(input_ids=inputs['input_ids'], attention_mask=inputs['attention_mask'])
+            model_output = encoder.encoder(input_ids=inputs['input_ids'], attention_mask=inputs['attention_mask'])
             hidden_state = model_output.last_hidden_state
             embeddings = vec2text.models.model_utils.mean_pool(hidden_state, inputs['attention_mask'])
 
@@ -37,11 +41,11 @@ def embedd_text(text_list,
 def invert_embedding(embeddings):
     start_time = time.time()
     inverted_embeddings = vec2text.invert_embeddings(
-        embeddings=embeddings.cuda(),
+        embeddings=embeddings.to("mps"),
         corrector=corrector,
         num_steps=20,
         sequence_beam_width=4
-        )
+        ).to("mps")
     end_time = time.time()
     print(end_time - start_time, " seconds to invert embedding")
     return inverted_embeddings
@@ -62,25 +66,25 @@ embeddings = embeddings.cpu()
 
 rounded_embeddings = torch.empty((0,768))
 rand_noise_embeddings = torch.empty((0,768))
-temp_tensor = embeddings
-#print(rounded_embeddings.shape)
-
 rounded_cosine_similarity = []
 noise_cosine_similarity = []
+index_vector = []
 
-#for cosine similarity
-cosi = torch.nn.CosineSimilarity()
 
 loops = 10
-for i in range(loops,0,-1):
-    #calc rounded embeddings
-    rounded_embeddings = torch.cat([rounded_embeddings, torch.round(embeddings,decimals = i)], dim = 0)
-    rounded_cosine_similarity.append((cosi(embeddings, rounded_embeddings[loops-i])).item())
-    #calc rand noise embeddings
-    temp_tensor += np.random.rand()/loops**i
-    rand_noise_embeddings = torch.cat([rand_noise_embeddings, temp_tensor], dim = 0)
-    noise_cosine_similarity.append((cosi(embeddings, rand_noise_embeddings[loops-i])).item())
-    temp_tensor = embeddings
+for i in range(loops,-1,-1):
+    rounded_embeddings = torch.cat([rounded_embeddings, torch.round(embeddings, decimals = i)], dim = 0)
+
+for i in range(loops,-1,-1):
+    rand_noise_embeddings = torch.cat([rand_noise_embeddings, embeddings+np.random.rand()/10**i], dim = 0)
+
+cosi = torch.nn.functional.cosine_similarity
+cosi(embeddings, rounded_embeddings)
+cosi(embeddings, rand_noise_embeddings)
+indicies = list(range(loops,-1,-1))
+
+
+
 # print(rounded_embeddings.shape)
 # print(rand_noise_embeddings.shape)
 # print(rounded_embeddings)
@@ -88,7 +92,7 @@ for i in range(loops,0,-1):
 print("rounded cosine similarity: ", rounded_cosine_similarity)
 print("rand noise cosine similarity: ", noise_cosine_similarity)
 
-inverted_rounded_embeddings = invert_embedding(rounded_embeddings)
+inverted_rounded_embeddings = invert_embedding(rounded_embeddings[0].unsqueeze(0).to("mps"))
 inverted_rand_noise_embeddings = invert_embedding(rand_noise_embeddings)
 print(inverted_rounded_embeddings)
 print(inverted_rand_noise_embeddings)
