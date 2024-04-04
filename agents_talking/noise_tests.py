@@ -52,7 +52,8 @@ def invert_embedding(embeddings):
 
 
 # ****** so far this code just does the results for a single sentence but ill change it tomorrow *******
-text_to_embed = ['What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for insights into ancient environments and dietary habits of extinct species?']
+#text_to_embed = ['What multi-disciplinary techniques do paleontologists use to analyze the chemical composition of fossilized bones for insights into ancient environments and dietary habits of extinct species?']
+text_to_embed = ['What evolutionary mechanisms might have driven the diversification of theropod dinosaurs into various ecological niches during the Mesozoic era?']
 
 embeddings = embedd_text(text_to_embed, encoder, tokenizer)
 #print(embeddings.shape)
