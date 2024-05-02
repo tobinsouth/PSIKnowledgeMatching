@@ -1,4 +1,5 @@
 import os
+import sys
 from openai import OpenAI
 from sentence_transformers import SentenceTransformer
 from torch import embedding_bag
@@ -19,7 +20,7 @@ talking_points_conversation_history = []
 
 #get api to spit some stuff out
 #questions:
-for x in range(0,10):
+for x in range(0,1):
 
     content = "Hi expert paleontologist, could you generate 1 question only you could come up with. Please output just the question generated. If this is not the first time being asked this, produce a different question than one generated previously"
     messages = questions_converstaion_history + [
@@ -76,9 +77,20 @@ expert_talking_points_embeddings = model.encode(expert_talking_points)
 for sentence, embedding in zip(expert_questions, expert_questions_embeddings):
     print("sentence:", sentence)
     print("embedding:", embedding)
+    # with open('e:/VisualStudioCodeDocuments/Internship stuff/PSIKnowledgeMatching/agents_talking/embedded_questions.txt', 'w') as f:
+    #     print(sentence, repr(embedding), file=f)
     print("")
 
 for sentence, embedding in zip(expert_talking_points, expert_talking_points_embeddings):
     print("sentence:", sentence)
     print("embedding:", embedding)
     print("")
+
+
+
+
+
+
+
+
+    
