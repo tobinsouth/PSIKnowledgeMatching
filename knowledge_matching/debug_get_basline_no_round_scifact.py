@@ -90,9 +90,10 @@ corpus_embeddings = torch.load(path_corpus_embeddings)
 
 # do rounding/precompute things if required before passing retrival_search class to be used in search
 
-# Load query_ids and corpus_ids
+# Load query_ids and corpus_ids and qrels
 path_query_ids = f'datasets/{DATASET}/query_embeddings.pt'
 path_corpus_ids = f'datasets/{DATASET}/corpus_embeddings.pt'
+path_qrels = f'datasets/{DATASET}/qrels_full.json'
 
 if not os.path.exists(path_query_ids):
     raise FileNotFoundError(f"File '{path_query_ids}' not found.")
@@ -103,6 +104,11 @@ if not os.path.exists(path_corpus_ids):
     raise FileNotFoundError(f"File '{path_corpus_ids}' not found.")
 with open(path_corpus_ids, 'r') as f:
     corpus_ids = json.load(f)
+
+if not os.path.exists(path_qrels):
+    raise FileNotFoundError(f"File '{path_qrels}' not found.")
+with open(path_qrels, "r") as f:
+    qrels = json.load(f)
 
 
 # create model class
