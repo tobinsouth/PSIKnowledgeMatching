@@ -1,7 +1,7 @@
 # constants
-# DATASET = "msmarco"
+DATASET = "msmarco"
 # DATASET = "scifact"
-DATASET = "quora"
+# DATASET = "quora"
 sbert_model_name = "msmarco-distilbert-base-tas-b"  # type: ignore
 device = "cpu" # cuda for gpu usage
 batch_size=256

@@ -1,4 +1,4 @@
-DATASET = "scifact"
+DATASET = "msmarco"
 sbert_model_name = "msmarco-distilbert-base-tas-b"
 device = "cpu" # cuda for gpu usage
 

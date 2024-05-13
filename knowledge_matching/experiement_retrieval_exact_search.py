@@ -129,15 +129,15 @@ class ExperiementRetrievalExactSearch(BaseSearch):
 class DenseRetrievalExactSearchNoEncoding(BaseSearch):
     def __init__(
             self,
-            query_ids,
-            corpus_ids,
+            query_ids: list[str],
+            corpus_ids: list[str],
             query_embeddings,
             corpus_embeddings,
             **kwargs):
-        self.query_ids = query_ids,
-        self.corpus_ids = corpus_ids,
-        self.query_embeddings = query_embeddings,
-        self.corpus_embeddings = corpus_embeddings,
+        self.query_ids = query_ids
+        self.corpus_ids = corpus_ids
+        self.query_embeddings = query_embeddings
+        self.corpus_embeddings = corpus_embeddings
         self.show_progress_bar = kwargs.get("show_progress_bar", True)
         self.convert_to_tensor = kwargs.get("convert_to_tensor", True)
         self.results = {}
@@ -153,15 +153,9 @@ class DenseRetrievalExactSearchNoEncoding(BaseSearch):
         # Returns a ranked list with the corpus ids
 
         query_ids = self.query_ids
+        print(type(query_ids))
         self.results = {qid: {} for qid in query_ids}
         query_embeddings = self.query_embeddings
-
-        # print("Sorting Corpus by document length (Longest first)...")
-        logger.info("Sorting Corpus by document length (Longest first)...")
-
-        # corpus_ids = sorted(corpus, key=lambda k: len(corpus[k].get("title", "") + corpus[k].get("text", "")), reverse=True)
-        # corpus = [corpus[cid] for cid in corpus_ids]
-        corpus_ids = sorted(list(corpus.keys()), reverse=True)
 
         result_heaps = {qid: [] for qid in query_ids}  # Keep only the top-k docs for each query
 
