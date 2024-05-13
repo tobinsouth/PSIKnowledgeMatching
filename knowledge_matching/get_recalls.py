@@ -82,7 +82,7 @@ for ROUNDING_TYPE in ROUNDING_TYPES:
     headers = [[f"{ROUNDING_TYPE}"] + list(range(n_steps))]
     data = [
             ["Recall@100"] + recall_100,
-            ["recall@1000"] + recall_1000
+            ["Recall@1000"] + recall_1000
             ]
 
 
