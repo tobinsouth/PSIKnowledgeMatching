@@ -1,7 +1,7 @@
 # constants
-# DATASET = "msmarco"
+DATASET = "msmarco"
 # DATASET = "scifact"
-DATASET = "quora"
+# DATASET = "quora"
 
 
 
