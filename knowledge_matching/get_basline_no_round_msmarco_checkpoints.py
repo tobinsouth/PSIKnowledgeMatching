@@ -17,6 +17,7 @@ from beir.retrieval.evaluation import EvaluateRetrieval
 import os, json, random
 import pickle
 import json
+from tqdm import tqdm
 
 
 from beir.retrieval.search import BaseSearch # type: ignore beir/retrieval/search/dense/exact_search.py
