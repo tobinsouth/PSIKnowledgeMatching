@@ -7,7 +7,7 @@ import torch
 import numpy as np
 
 MODELNAME = "sentence-transformers/gtr-t5-base"
-USE_INVERTER = True
+# USE_INVERTER = True
 device = "cuda" if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else "cpu"
 
 if USE_INVERTER:

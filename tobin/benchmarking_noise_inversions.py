@@ -17,9 +17,11 @@ text_to_embed = ['This is an example sentence for LLM embedding and reconstructi
 
 # Let's establish a baseline
 embeddings = embed_text(text_to_embed)
-inverted = invert_embedding(embeddings)
-inverted_embedding = embed_text(inverted)
-baseline_cos_diff = torch.cosine_similarity(embeddings, inverted_embedding)
+if USE_INVERTER:
+    inverted = invert_embedding(embeddings)
+    inverted_embedding = embed_text(inverted)
+    baseline_cos_diff = torch.cosine_similarity(embeddings, inverted_embedding)
+
 
 # Now we'll loop through and add some noise to the embeddings
 
@@ -28,9 +30,10 @@ cosine_diffs_pre_invert = {}
 cosine_diffs_post_invert = {}
 inversions = {}
 diff_ranges = {}
-n_steps = 6
+n_steps = 100
+steps_range = range(2, n_steps)
 
-for i in tqdm(range(n_steps)):
+for i in tqdm(steps_range):
     edges, diff = get_edges(i, embedding_range)
     rounded = fakeround(edges, embeddings)
     gaussed = gauss_noise(embeddings, diff)
@@ -42,57 +45,61 @@ for i in tqdm(range(n_steps)):
                                   'gaussed': torch.cosine_similarity(embeddings, gaussed),
                                   'uniformed': torch.cosine_similarity(embeddings, uniformed)}
     
-    inverted_rounded = invert_embedding(rounded)
-    inverted_gaussed = invert_embedding(gaussed)
-    inverted_uniformed = invert_embedding(uniformed)
+    if USE_INVERTER:
+        inverted_rounded = invert_embedding(rounded)
+        inverted_gaussed = invert_embedding(gaussed)
+        inverted_uniformed = invert_embedding(uniformed)
 
-    inversions[i] = {'rounded': inverted_rounded,
-                  'gaussed': inverted_gaussed,
-                  'uniformed': inverted_uniformed}
+        inversions[i] = {'rounded': inverted_rounded,
+                    'gaussed': inverted_gaussed,
+                    'uniformed': inverted_uniformed}
+        
+
+        inv_rounded_embedding = embed_text(inverted_rounded)
+        inv_gaussed_embedding = embed_text(inverted_gaussed)
+        inv_uniformed_embedding = embed_text(inverted_uniformed)
+
+        cosine_diffs_post_invert[i] = {'rounded': torch.cosine_similarity(embeddings, inv_rounded_embedding),
+                                        'gaussed': torch.cosine_similarity(embeddings, inv_gaussed_embedding),
+                                        'uniformed': torch.cosine_similarity(embeddings, inv_uniformed_embedding)}
     
-
-    inv_rounded_embedding = embed_text(inverted_rounded)
-    inv_gaussed_embedding = embed_text(inverted_gaussed)
-    inv_uniformed_embedding = embed_text(inverted_uniformed)
-
-    cosine_diffs_post_invert[i] = {'rounded': torch.cosine_similarity(embeddings, inv_rounded_embedding),
-                                    'gaussed': torch.cosine_similarity(embeddings, inv_gaussed_embedding),
-                                    'uniformed': torch.cosine_similarity(embeddings, inv_uniformed_embedding)}
-    
-
-# Print results
-print("Original text", text_to_embed)
-print("Basic inversion", inverted)
-print("Inversions for increasing noise")
-for i in range(n_steps):
-    print(f"Step {i}")
-    print("Rounded:", inversions[i]['rounded'])
-    print("Gaussed:", inversions[i]['gaussed'])
-    print("Uniformed:", inversions[i]['uniformed'])
-
 
 # Make the figure
-x = [diff_ranges[i]/4 for i in range(n_steps)]
+x = [diff_ranges[i]/4 for i in steps_range]
 x = [_x/(embedding_range[1] - embedding_range[0]) for _x in x]
-y_baseline = baseline_cos_diff.item()
-y_rounded_pre = [cosine_diffs_pre_invert[i]['rounded'].item() for i in range(n_steps)]
-y_gaussed_pre = [cosine_diffs_pre_invert[i]['gaussed'].item() for i in range(n_steps)]
-y_uniformed_pre = [cosine_diffs_pre_invert[i]['uniformed'].item() for i in range(n_steps)]
-
-y_rounded = [cosine_diffs_post_invert[i]['rounded'].item() for i in range(n_steps)]
-y_gaussed = [cosine_diffs_post_invert[i]['gaussed'].item() for i in range(n_steps)]
-y_uniformed = [cosine_diffs_post_invert[i]['uniformed'].item() for i in range(n_steps)]
+y_rounded_pre = [cosine_diffs_pre_invert[i]['rounded'].item() for i in steps_range]
+y_gaussed_pre = [cosine_diffs_pre_invert[i]['gaussed'].item() for i in steps_range]
+y_uniformed_pre = [cosine_diffs_pre_invert[i]['uniformed'].item() for i in steps_range]
 
 fig, ax = plt.subplots()
-ax.axhline(y_baseline, color='k', linestyle='dashdot', label='Baseline ')
 
 ax.plot(x, y_rounded_pre, linestyle='--', alpha=0.5, c = 'r')
 ax.plot(x, y_gaussed_pre, linestyle='--', alpha=0.5, c = 'g')
 ax.plot(x, y_uniformed_pre,  linestyle='--', alpha=0.5, c = 'b')
 
-ax.plot(x, y_rounded, label='Rounded', c = 'r')
-ax.plot(x, y_gaussed, label='Gauss Noise', c = 'g')
-ax.plot(x, y_uniformed, label='Uniform Noise', c = 'b')
+
+if USE_INVERTER:
+    # Print results
+    print("Original text", text_to_embed)
+    print("Basic inversion", inverted)
+    print("Inversions for increasing noise")
+    for i in steps_range:
+        print(f"Step {i}")
+        print("Rounded:", inversions[i]['rounded'])
+        print("Gaussed:", inversions[i]['gaussed'])
+        print("Uniformed:", inversions[i]['uniformed'])
+
+    y_rounded = [cosine_diffs_post_invert[i]['rounded'].item() for i in steps_range]
+    y_gaussed = [cosine_diffs_post_invert[i]['gaussed'].item() for i in steps_range]
+    y_uniformed = [cosine_diffs_post_invert[i]['uniformed'].item() for i in steps_range]
+    y_baseline = baseline_cos_diff.item()
+
+
+    ax.axhline(y_baseline, color='k', linestyle='dashdot', label='Baseline ')
+
+    ax.plot(x, y_rounded, label='Rounded', c = 'r')
+    ax.plot(x, y_gaussed, label='Gauss Noise', c = 'g')
+    ax.plot(x, y_uniformed, label='Uniform Noise', c = 'b')
 
 ax.set_xlabel('Mean embedding noise (% of embedding range)')
 ax.set_ylabel('Cosine similarity with original embedding')
