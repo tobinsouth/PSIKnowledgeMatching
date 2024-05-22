@@ -1,3 +1,26 @@
+"""
+Script Name: round_embeddings.py
+
+Summary:
+    This script loads precomputed embeddings for queries and corpus from the specified dataset,
+    applies different rounding techniques to these embeddings, and saves the rounded embeddings.
+
+Usage:
+    python3 round_embeddings.py
+
+Dependencies:
+    - torch
+    - numpy
+    - tqdm
+    - tobin.tools (custom module)
+
+Author:
+    Shayla Nguyen
+
+Date:
+    2024-05-23
+"""
+
 # constants
 DATASET = "msmarco"
 # DATASET = "scifact"

@@ -1,3 +1,29 @@
+"""
+Script Name: plot_recalls_msmarco.py
+
+Summary:
+    This script loads recall values for different rounding types and steps from the specified dataset,
+    plots recall@100 and recall@1000 against mean embedding noise, and saves the plots to PNG files.
+
+Usage:
+    python3 plot_recalls_msmarco.py
+
+Dependencies:
+    - torch
+    - matplotlib
+    - tqdm
+    - beir
+    - beir_reengineered
+    - experiement_retrieval_exact_search (custom module)
+
+Author:
+    Shayla Nguyen
+
+Date:
+    2024-05-23
+"""
+
+
 DATASET = "msmarco"
 ROUNDING_TYPES = ['rounded_fakeround', 'gauss_noise', 'uniform_noise']
 

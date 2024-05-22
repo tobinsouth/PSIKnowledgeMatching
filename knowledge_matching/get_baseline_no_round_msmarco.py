@@ -1,3 +1,28 @@
+"""
+Script Name: get_baseline_no_round_msmarco.py
+
+Summary:
+    This script downloads the MSMARCO dataset, encodes the queries and corpus using a pre-trained SBERT model,
+    and saves the embeddings without applying any rounding.
+
+Usage:
+    python3 get_baseline_no_round_msmarco.py
+
+Dependencies:
+    - requests
+    - numpy
+    - sentence-transformers
+    - beir
+    - torch
+
+Author:
+    Shayla Nguyen
+
+Date:
+    2024-05-23
+"""
+
+
 # constants
 DATASET = "msmarco"
 # DATASET = "scifact"
@@ -17,7 +42,6 @@ from beir.retrieval.evaluation import EvaluateRetrieval
 import os, json, random
 import pickle
 import json
-from tqdm import tqdm
 
 
 from beir.retrieval.search import BaseSearch # type: ignore beir/retrieval/search/dense/exact_search.py
@@ -41,9 +65,56 @@ data_path = util.download_and_unzip(url, out_dir)
 
 
 corpus, queries, qrels = GenericDataLoader(data_folder=data_path).load(split="test")
+# Save qrels to a JSON file
+with open(f"datasets/{DATASET}/qrels_full.json", "w") as f:
+    json.dump(qrels, f)
 
 beir_sbert = NewSentenceBERT(sbert_model_name, device=device)
 
+
+# save query_ids and  corpus_ids for future use
+query_ids = list(queries.keys()) # query_ids: list[str]
+corpus_ids = sorted(corpus, key=lambda k: len(corpus[k].get("title", "") + corpus[k].get("text", "")), reverse=True) # corpus_ids: list[str]
+with open(f'datasets/{DATASET}/query_ids.json', 'w') as f:
+    json.dump(query_ids, f)
+with open(f'datasets/{DATASET}/corpus_ids.json', 'w') as f:
+    json.dump(corpus_ids, f)
+
+
+# encode queries and save for future use
+queries = [queries[qid] for qid in queries]
+query_embeddings = beir_sbert.encode_queries(
+            queries,
+            batch_size=batch_size,
+            show_progress_bar=True,
+            convert_to_tensor=True)
+torch.save(query_embeddings, f'datasets/{DATASET}/query_embeddings.pt')
+
+# encode corpus and save for future use
+corpus = [corpus[cid] for cid in corpus_ids]
+corpus_embeddings = beir_sbert.encode_corpus(
+    corpus,
+    batch_size=batch_size,
+    show_progress_bar=True,
+    convert_to_tensor=True
+)
+torch.save(corpus_embeddings, f'datasets/{DATASET}/corpus_embeddings.pt')
+
+
+path_query_embeddings = f'datasets/{DATASET}/query_embeddings.pt'
+path_corpus_embeddings = f'datasets/{DATASET}/corpus_embeddings.pt'
+
+# Verify file existence
+if not os.path.exists(path_corpus_embeddings):
+    raise FileNotFoundError(f"File '{path_corpus_embeddings}' not found.")
+if not os.path.exists(path_query_embeddings):
+    raise FileNotFoundError(f"File '{path_query_embeddings}' not found.")
+
+# open up  encoded queries and encoded corpus
+query_embeddings = torch.load(path_query_embeddings)
+corpus_embeddings = torch.load(path_corpus_embeddings)
+
+# do rounding/precompute things if required before passing retrival_search class to be used in search
 
 # Load query_ids and corpus_ids and qrels
 path_query_ids = f'datasets/{DATASET}/query_ids.json'
@@ -64,86 +135,6 @@ if not os.path.exists(path_qrels):
     raise FileNotFoundError(f"File '{path_qrels}' not found.")
 with open(path_qrels, "r") as f:
     qrels = json.load(f)
-
-
-
-path_query_embeddings = f'datasets/{DATASET}/query_embeddings.pt'
-
-if not os.path.exists(path_query_embeddings):
-    raise FileNotFoundError(f"File '{path_query_embeddings}' not found.")
-
-# open up  encoded queries
-query_embeddings = torch.load(path_query_embeddings)
-
-## Checkpoints
-checkpoint_interval = 100  # Save checkpoint every 100 steps
-# Paths
-checkpoint_path = f'datasets/{DATASET}/corpus_embeddings_save_checkpoint.pt'
-final_path = f'datasets/{DATASET}/corpus_embeddings.pt'
-
-# encode corpus and save for future use
-corpus = [corpus[cid] for cid in corpus_ids]
-
-# Function to load embeddings if checkpoint exists
-def load_checkpoint():
-    if os.path.exists(checkpoint_path):
-        print("Loading checkpoint...")
-        return torch.load(checkpoint_path)
-    return None
-
-# Initialize or load checkpoint
-corpus_embeddings = load_checkpoint()
-start_idx = len(corpus_embeddings) if corpus_embeddings is not None else 0
-
-
-if corpus_embeddings is None:
-    corpus_embeddings = []
-
-# Encode corpus and save periodically
-for i in tqdm(range(start_idx, len(corpus), batch_size), desc="Encoding corpus"):
-    batch = corpus[i:i + batch_size]
-    batch_embeddings = beir_sbert.encode_corpus(
-        batch,
-        batch_size=batch_size,
-        show_progress_bar=False,  # Disable internal progress bar as we're using tqdm
-        convert_to_tensor=True
-    )
-    corpus_embeddings.extend(batch_embeddings)
-
-    # Save checkpoint
-    if (i // batch_size + 1) % checkpoint_interval == 0:
-        print(f"Saving checkpoint at step {i}...")
-        torch.save(corpus_embeddings, checkpoint_path)
-
-# Save the final embeddings
-torch.save(corpus_embeddings, final_path)
-
-# Clean up checkpoint
-if os.path.exists(checkpoint_path):
-    os.remove(checkpoint_path)
-
-print(f"Corpus embeddings saved to {final_path}")
-
-# corpus_embeddings = beir_sbert.encode_corpus(
-#     corpus,
-#     batch_size=batch_size,
-#     show_progress_bar=True,
-#     convert_to_tensor=True
-# )
-# torch.save(corpus_embeddings, f'datasets/{DATASET}/corpus_embeddings.pt')
-
-
-
-path_corpus_embeddings = f'datasets/{DATASET}/corpus_embeddings.pt'
-
-# Verify file existence
-if not os.path.exists(path_corpus_embeddings):
-    raise FileNotFoundError(f"File '{path_corpus_embeddings}' not found.")
-
-# open up  encoded queries and encoded corpus
-# query_embeddings = torch.load(path_query_embeddings)
-corpus_embeddings = torch.load(path_corpus_embeddings)
-
 
 
 # create model class

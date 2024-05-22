@@ -1,3 +1,29 @@
+"""
+Script Name: get_recalls.py
+
+Summary:
+    This script loads rounded embeddings for queries and corpus from the specified dataset,
+    calculates recall@100 and recall@1000 for each rounding type and step, and saves the results to CSV files.
+
+Usage:
+    python3 get_recalls.py
+
+Dependencies:
+    - torch
+    - numpy
+    - tqdm
+    - beir
+    - beir_reengineered
+    - experiement_retrieval_exact_search (custom module)
+
+Author:
+    Shayla Nguyen
+
+Date:
+    2024-05-23
+"""
+
+
 # constants
 DATASET = "msmarco"
 # DATASET = "scifact"
