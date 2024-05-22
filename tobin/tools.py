@@ -3,46 +3,44 @@ One of the key functionalities of this project is the ability to embed, noise, a
 
 You may wish to change the encoders and correctors to suit your needs.
 """
-# commented out for using just the rounding functions
-# import vec2text
 import torch
-# from transformers import AutoModel, AutoTokenizer
 import numpy as np
 
-# commented out for using just the rounding functions
-# device = "cuda" if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else "cpu"
-# encoder = AutoModel.from_pretrained("sentence-transformers/gtr-t5-base").encoder.to(device)
-# tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/gtr-t5-base")
-# corrector = vec2text.load_pretrained_corrector("gtr-base")
+MODELNAME = "sentence-transformers/gtr-t5-base"
+USE_INVERTER = True
+device = "cuda" if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else "cpu"
 
+if USE_INVERTER:
+    from transformers import AutoModel, AutoTokenizer
+    import vec2text
 
-# def embed_text(text_list) -> torch.Tensor:
-#     """Embeds a list of texts using a pre-trained model and returns the embeddings."""
-#     inputs = tokenizer(text_list, return_tensors="pt", max_length=128, padding="max_length", truncation=True).to(device)
-#     with torch.no_grad():
-#         model_output = encoder(input_ids=inputs['input_ids'], attention_mask=inputs['attention_mask'])
-#         hidden_state = model_output.last_hidden_state
-#         embeddings = vec2text.models.model_utils.mean_pool(hidden_state, inputs['attention_mask'])  # type: ignore
-#     return embeddings.cpu()
+    encoder = AutoModel.from_pretrained(MODELNAME).encoder.to(device)
+    tokenizer = AutoTokenizer.from_pretrained(MODELNAME)
+    corrector = vec2text.load_pretrained_corrector("gtr-base")
 
-# def invert_embedding(embeddings, num_steps=20):
-#     """Inverts the given embeddings using vec2text"""
-#     inverted_embeddings = vec2text.invert_embeddings(
-#         embeddings=embeddings.to(device), corrector=corrector, num_steps=20, sequence_beam_width=4
-#     )
-#     return inverted_embeddings
+    def embed_text(text_list) -> torch.Tensor:
+        """Embeds a list of texts using a pre-trained model and returns the embeddings."""
+        inputs = tokenizer(text_list, return_tensors="pt", max_length=128, padding="max_length", truncation=True).to(device)
+        with torch.no_grad():
+            model_output = encoder(input_ids=inputs['input_ids'], attention_mask=inputs['attention_mask'])
+            hidden_state = model_output.last_hidden_state
+            embeddings = vec2text.models.model_utils.mean_pool(hidden_state, inputs['attention_mask'])  # type: ignore
+        return embeddings.cpu()
+
+    def invert_embedding(embeddings, num_steps=20):
+        """Inverts the given embeddings using vec2text"""
+        inverted_embeddings = vec2text.invert_embeddings(
+            embeddings=embeddings.to(device), corrector=corrector, num_steps=20, sequence_beam_width=4
+        )
+        return inverted_embeddings
 
 def get_edges(splits, original_range):
     """
     Returns a tensor containing rounding edges for the given number of splits.
     """
-    # Magic rounding builder to make rounding edges
-    diff = np.abs(original_range[1] - original_range[0])
-    edges = torch.tensor(original_range)
-    for i in range(splits):
-        diff /= 2
-        edges = torch.cat([edges, edges - diff])
-    return edges.float(), diff
+    edges = np.linspace(original_range[0], original_range[1], splits + 1)
+    diff = (original_range[1] - original_range[0]) / splits
+    return torch.tensor(edges, dtype=torch.float32), diff
 
 def fakeround(edges, embeddings):
     """
@@ -65,10 +63,6 @@ def uniform_noise(embeddings, diff):
 
 def test_embeddings_and_rounding():
     """This function will run all the relevant functions and test the error rates are acceptable and all code works."""
-    # device = "cuda" if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else "cpu"
-    # encoder = AutoModel.from_pretrained("sentence-transformers/gtr-t5-base").encoder.to(device)
-    # tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/gtr-t5-base")
-    # corrector = vec2text.load_pretrained_corrector("gtr-base")
 
     text_to_embed = ['This is an example sentence for LLM embedding and reconstruction.', 'This is another example sentence.', 'For this one Im gonna mentioned the great work Micheal and Shayla are doing']
 
@@ -79,7 +73,7 @@ def test_embeddings_and_rounding():
 
     # Testing the rounding works
     edges, diff = get_edges(6, embedding_range)
-    assert len(edges) == 2**(6 + 1)
+    assert len(edges) == 6 + 1
 
     diff_matrix = (edges - edges.view(-1,1))
     nearest_edge_diff = torch.min(torch.abs(diff_matrix[~torch.eye(diff_matrix.shape[0], dtype=bool)]))
