@@ -5,10 +5,7 @@ You may wish to change the encoders and correctors to suit your needs.
 """
 import torch
 import numpy as np
-
-MODELNAME = "sentence-transformers/gtr-t5-base"
-# USE_INVERTER = True
-device = "cuda" if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else "cpu"
+from params import MODELNAME, USE_INVERTER, device
 
 if USE_INVERTER:
     from transformers import AutoModel, AutoTokenizer
@@ -30,7 +27,7 @@ if USE_INVERTER:
     def invert_embedding(embeddings, num_steps=20):
         """Inverts the given embeddings using vec2text"""
         inverted_embeddings = vec2text.invert_embeddings(
-            embeddings=embeddings.to(device), corrector=corrector, num_steps=20, sequence_beam_width=4
+            embeddings=embeddings.to(device), corrector=corrector, num_steps=20, sequence_beam_width=2
         )
         return inverted_embeddings
 
