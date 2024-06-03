@@ -117,7 +117,6 @@ class ExperiementRetrievalExactSearch(BaseSearch):
                         # If item is larger than the smallest in the heap, push it on the heap then pop the smallest element
                         heapq.heappushpop(result_heaps[query_id], (score, corpus_id))
 
-        print("get results heaps")
         for qid in result_heaps:
             for score, corpus_id in result_heaps[qid]:
                 self.results[qid][corpus_id] = score
