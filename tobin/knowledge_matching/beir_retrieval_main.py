@@ -270,15 +270,17 @@ def progressive_psi_retrieval(DATASET: str):
         query_embeddings_round
 
 
-    query_string_array = [str(vec) for vec in query_embeddings_round]
-    corpus_string_array = [str(vec) for vec in corpus_embeddings_round]
-    set(query_string_array).intersection(corpus_string_array)
 
-    from tqdm import tqdm
-    for q in tqdm(query_embeddings_round):
-        for c in corpus_embeddings_round:
-            if all(q == c):
-                print("Match")
+# Set intersections
+query_string_array = [str(vec) for vec in query_embeddings_round]
+corpus_string_array = [str(vec) for vec in corpus_embeddings_round]
+set(query_string_array).intersection(corpus_string_array)
+
+from tqdm import tqdm
+for q in tqdm(query_embeddings_round):
+    for c in corpus_embeddings_round:
+        if all(q == c):
+            print("Match")
 
 
 
